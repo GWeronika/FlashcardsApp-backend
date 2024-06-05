@@ -1,4 +1,4 @@
-package pk.wieik.flashcards.entity;
+package pk.backend.flashcards.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,11 +1,11 @@
-package pk.wieik.flashcards.controller;
+package pk.backend.flashcards.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pk.wieik.flashcards.entity.AppUser;
-import pk.wieik.flashcards.service.UserService;
+import pk.backend.flashcards.entity.AppUser;
+import pk.backend.flashcards.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/add")
-    public void addUser(String name, String password, String salt) {
-        userService.addUser(name, password, salt);
+    public void addUser(String name, String password) {
+        userService.addUser(name, password);
     }
 
     @GetMapping("/delete")
@@ -44,13 +44,14 @@ public class UserController {
     public void editUser(int id, String newName, String newPassword) {
         userService.editUser(id, newName, newPassword);
     }
-    @GetMapping("/edit/name")
-    public void editUserName(int id, String name) {
-        userService.editUserName(id, name);
-    }
 
     @GetMapping("/edit/password")
     public void editUserPassword(int id, String password) {
         userService.editUserPassword(id, password);
+    }
+
+    @GetMapping("/authentication")
+    public Optional<AppUser> authenticateUser(String name, String password) {
+        return userService.authenticateUser(name, password);
     }
 }

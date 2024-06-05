@@ -1,11 +1,11 @@
-package pk.wieik.flashcards.service;
+package pk.backend.flashcards.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pk.wieik.flashcards.entity.Set;
-import pk.wieik.flashcards.entity.AppUser;
-import pk.wieik.flashcards.repository.SetRepository;
+import pk.backend.flashcards.entity.Set;
+import pk.backend.flashcards.entity.AppUser;
+import pk.backend.flashcards.repository.SetRepository;
 
 import java.time.LocalDate;
 import java.util.List;

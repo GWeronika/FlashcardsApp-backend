@@ -1,12 +1,12 @@
-package pk.wieik.flashcards.controller;
+package pk.backend.flashcards.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pk.wieik.flashcards.entity.Flashcard;
-import pk.wieik.flashcards.entity.Set;
-import pk.wieik.flashcards.service.FlashcardService;
+import pk.backend.flashcards.entity.Flashcard;
+import pk.backend.flashcards.entity.Set;
+import pk.backend.flashcards.service.FlashcardService;
 
 import java.util.List;
 import java.util.Optional;
