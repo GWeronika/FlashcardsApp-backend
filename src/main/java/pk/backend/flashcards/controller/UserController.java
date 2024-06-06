@@ -1,9 +1,7 @@
 package pk.backend.flashcards.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pk.backend.flashcards.entity.AppUser;
 import pk.backend.flashcards.service.UserService;
 
@@ -30,8 +28,8 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/add")
-    public void addUser(String name, String password) {
+    @PostMapping("/add")
+    public void addUser(@RequestParam String name, @RequestParam String password) {
         userService.addUser(name, password);
     }
 
