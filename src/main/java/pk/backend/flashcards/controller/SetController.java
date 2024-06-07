@@ -32,9 +32,19 @@ public class SetController {
         return setService.getSetById(id);
     }
 
+    @GetMapping("/select/userid")
+    public Optional<List<Set>> getSetByUserId(int userID) {
+        return setService.getSetByUserId(userID);
+    }
+
     @GetMapping("/add")
     public void addSet(String name, LocalDate date, AppUser user) {
         setService.addSet(name, date, user);
+    }
+
+    @GetMapping("/add/description")
+    public void addSetWithDescription(String name, LocalDate date, String description, AppUser user) {
+        setService.addSetWithDescription(name, date, description, user);
     }
 
     @GetMapping("/delete")
@@ -45,5 +55,10 @@ public class SetController {
     @GetMapping("/edit")
     public void editSet(int id, String newName) {
         setService.editSet(id, newName);
+    }
+
+    @GetMapping("/edit/description")
+    public void editSetDescription(int id, String description) {
+        setService.editSetDescription(id, description);
     }
 }
