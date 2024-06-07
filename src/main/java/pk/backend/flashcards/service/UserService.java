@@ -39,7 +39,7 @@ public class UserService {
         }
     }
 
-    public void addUser(String name, String password) {
+    public void addUser(String name, String email, String password) {
         try {
             if(name == null || password == null) {
                 throw new IllegalArgumentException("UserService: incorrect data");
@@ -47,13 +47,13 @@ public class UserService {
             if(userRepository.existsByName(name)) {
                 throw new IllegalArgumentException("UserService: user with this name already exists");
             }
-            if(isPasswordValid(password)) {
+            if(isPasswordValid(password) && isEmailValid(email)) {
                 String salt = SaltGenerator.generateSalt();
                 String hashedPassword = PasswordEncoder.hashPassword(password, salt);
-                AppUser user = new AppUser(name, hashedPassword, salt);
+                AppUser user = new AppUser(name, email, hashedPassword, salt);
                 userRepository.save(user);
             } else {
-                throw new IllegalArgumentException("UserService: password not valid");
+                throw new IllegalArgumentException("UserService: password or email not valid");
             }
         } catch (Exception e) {
             System.err.println("Error adding user: " + e.getMessage());
@@ -68,27 +68,6 @@ public class UserService {
             userRepository.deleteById(id);
         } catch (Exception e) {
             System.err.println("Error deleting user: " + e.getMessage());
-        }
-    }
-
-    public void editUser(int id, String newName, String newPassword) {
-        try {
-            if (id <= 0) {
-                throw new IllegalArgumentException("UserService: incorrect id");
-            }
-            Optional<AppUser> existingUserOptional = userRepository.findById(id);
-            if (existingUserOptional.isPresent()) {
-                AppUser existingUser = existingUserOptional.get();
-                existingUser.setName(newName);
-                existingUser.setPassword(newPassword);
-
-                userRepository.save(existingUser);
-            } else {
-                throw new IllegalArgumentException("UserService: user not found with id " + id);
-            }
-        } catch (Exception e) {
-            System.err.println("Error editing user: " + e.getMessage());
-            throw e;
         }
     }
 
@@ -115,8 +94,8 @@ public class UserService {
         }
     }
 
-    public Optional<AppUser> authenticateUser(String name, String password) {
-        Optional<AppUser> optionalUser = userRepository.findByName(name);
+    public Optional<AppUser> authenticateUser(String email, String password) {
+        Optional<AppUser> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isPresent()) {
             AppUser user = optionalUser.get();
             String salt = user.getSalt();
@@ -132,6 +111,13 @@ public class UserService {
         String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
         Pattern pattern = Pattern.compile(passwordPattern);
         Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
+    }
+
+    private boolean isEmailValid(String email) {
+        String emailPattern = "^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        Pattern pattern = Pattern.compile(emailPattern);
+        Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
 }

@@ -15,6 +15,9 @@ public class AppUser {
     private String name;
 
     @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -22,8 +25,9 @@ public class AppUser {
 
     public AppUser() {}
 
-    public AppUser(String name, String password, String salt) {
+    public AppUser(String name, String email, String password, String salt) {
         this.name = name;
+        this.email = email;
         this.password = password;
         this.salt = salt;
     }
