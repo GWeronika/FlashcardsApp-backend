@@ -94,8 +94,8 @@ public class UserService {
         }
     }
 
-    public Optional<AppUser> authenticateUser(String email, String password) {
-        Optional<AppUser> optionalUser = userRepository.findByEmail(email);
+    public Optional<AppUser> authenticateUser(String username, String password) {
+        Optional<AppUser> optionalUser = userRepository.findByName(username);
         if(optionalUser.isPresent()) {
             AppUser user = optionalUser.get();
             String salt = user.getSalt();

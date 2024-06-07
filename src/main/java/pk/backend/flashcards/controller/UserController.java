@@ -8,7 +8,6 @@ import pk.backend.flashcards.entity.AppUser;
 import pk.backend.flashcards.service.UserService;
 
 import java.util.List;
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 @RestController
@@ -53,14 +52,13 @@ public class UserController {
         userService.editUserPassword(id, password);
     }
 
-    @PostMapping("/authentication")
-    public ResponseEntity<?> authenticateUser(@RequestBody String email, @RequestBody String password, HttpSession session) {
-        Optional<AppUser> user = userService.authenticateUser(email, password);
-        if (user.isPresent()) {
-            session.setAttribute("userId", user.get().getUserId());
-            return ResponseEntity.ok().build();
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password) {
+        Optional<AppUser> authenticatedUser = userService.authenticateUser(username, password);
+        if (authenticatedUser.isPresent()) {
+            return ResponseEntity.ok("Login successful");
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
 }
