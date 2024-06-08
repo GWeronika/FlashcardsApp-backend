@@ -31,6 +31,11 @@ public class FlashcardController {
         return flashcardService.getFlashcardById(id);
     }
 
+    @GetMapping("/select/setid")
+    public Optional<List<Flashcard>> getFlashcardsBySetId(int setId) {
+        return flashcardService.getFlashcardsBySetId(setId);
+    }
+
     @GetMapping("/add")
     public void addFlashcard(String word, String description, boolean isFavourite, Set set) {
         flashcardService.addFlashcard(word, description, isFavourite, set);

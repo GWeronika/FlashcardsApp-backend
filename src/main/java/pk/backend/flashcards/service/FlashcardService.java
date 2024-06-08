@@ -27,9 +27,21 @@ public class FlashcardService {
     public Optional<Flashcard> getFlashcardById(int id) {
         try {
             if(id <= 0) {
-                throw new IllegalArgumentException("FlashcardRepository: incorrect id");
+                throw new IllegalArgumentException("FlashcardService: incorrect id");
             }
             return flashcardRepository.findById(id);
+        } catch (Exception e) {
+            System.err.println("Error retrieving flashcard");
+            throw e;
+        }
+    }
+
+    public Optional<List<Flashcard>> getFlashcardsBySetId(int setId) {
+        try {
+            if(setId <= 0) {
+                throw new IllegalArgumentException("FlashcardService: incorrect setId");
+            }
+            return flashcardRepository.getFlashcardsBySetId(setId);
         } catch (Exception e) {
             System.err.println("Error retrieving flashcard");
             throw e;

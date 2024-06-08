@@ -1,0 +1,8 @@
+### Getting all flashcards ###
+GET http://localhost:8090/api/flashcard/select/all
+
+### Getting a flashcard with specific id ###
+GET http://localhost:8090/api/flashcard/select/id?id=1
+
+### Getting flashcards from a specific set ###
+GET http://localhost:8090/api/flashcard/select/setid?setId=1
