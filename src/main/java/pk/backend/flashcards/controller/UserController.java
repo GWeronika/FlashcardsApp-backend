@@ -53,12 +53,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password) {
-        Optional<AppUser> authenticatedUser = userService.authenticateUser(username, password);
-        if (authenticatedUser.isPresent()) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
+    public Optional<AppUser> loginUser(@RequestParam String username, @RequestParam String password) {
+        return userService.authenticateUser(username, password);
     }
+
 }

@@ -8,8 +8,10 @@ import pk.backend.flashcards.entity.AppUser;
 import pk.backend.flashcards.repository.SetRepository;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -122,5 +124,12 @@ public class SetService {
             System.err.println("Error editing set: " + e.getMessage());
             throw e;
         }
+    }
+
+    public List<Set> sortSetsByDate(boolean ascending) {
+        List<Set> sets = setRepository.findAll();
+        return sets.stream()
+                .sorted(ascending ? Comparator.comparing(Set::getDate) : Comparator.comparing(Set::getDate).reversed())
+                .collect(Collectors.toList());
     }
 }

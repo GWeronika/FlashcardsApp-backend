@@ -3,6 +3,7 @@ package pk.backend.flashcards.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.entity.AppUser;
@@ -33,7 +34,7 @@ public class SetController {
     }
 
     @GetMapping("/select/userid")
-    public Optional<List<Set>> getSetByUserId(int userID) {
+    public Optional<List<Set>> getSetByUserId(@RequestParam int userID) {
         return setService.getSetByUserId(userID);
     }
 
@@ -60,5 +61,10 @@ public class SetController {
     @GetMapping("/edit/description")
     public void editSetDescription(int id, String description) {
         setService.editSetDescription(id, description);
+    }
+
+    @GetMapping("/sort-date")
+    public List<Set> sortSetsByDate(boolean ascending) {
+        return setService.sortSetsByDate(ascending);
     }
 }
