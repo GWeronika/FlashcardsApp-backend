@@ -6,3 +6,6 @@ GET http://localhost:8090/api/set/select/id?id=1
 
 ### Getting sets of a specific user ###
 GET http://localhost:8090/api/set/select/userid?userID=1
+
+### Getting sets including given searchTerm ###
+GET http://localhost:8090/api/set/search?searchTerm=english

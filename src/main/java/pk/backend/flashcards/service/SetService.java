@@ -126,6 +126,10 @@ public class SetService {
         }
     }
 
+    public List<Set> searchSets(String searchTerm) {
+        return setRepository.searchSets(searchTerm);
+    }
+
     public List<Set> sortSetsByDate(boolean ascending) {
         List<Set> sets = setRepository.findAll();
         return sets.stream()

@@ -63,6 +63,19 @@ public class SetController {
         setService.editSetDescription(id, description);
     }
 
+    @GetMapping("/search")
+    public List<Set> searchSets(@RequestParam String searchTerm) {
+        System.out.println("Received search term: " + searchTerm);
+        List<Set> sets = setService.searchSets(searchTerm);
+        System.out.println("Found sets: " + sets);
+        return sets;
+    }
+
+    @GetMapping("/search/test")
+    public String testSearchEndpoint() {
+        return "Search endpoint works!";
+    }
+
     @GetMapping("/sort-date")
     public List<Set> sortSetsByDate(boolean ascending) {
         return setService.sortSetsByDate(ascending);
