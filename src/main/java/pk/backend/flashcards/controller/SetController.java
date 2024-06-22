@@ -1,10 +1,11 @@
 package pk.backend.flashcards.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.entity.AppUser;
 import pk.backend.flashcards.service.SetService;
@@ -43,9 +44,20 @@ public class SetController {
         setService.addSet(name, date, user);
     }
 
-    @GetMapping("/add/description")
-    public void addSetWithDescription(String name, LocalDate date, String description, AppUser user) {
-        setService.addSetWithDescription(name, date, description, user);
+    @PostMapping("/add/description")
+    public ResponseEntity<?> addSetWithDescription(@RequestParam String name, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                   @RequestParam String description, @RequestParam String userJson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            AppUser user = objectMapper.readValue(userJson, AppUser.class);
+
+            Optional<Set> newSet = setService.addSetWithDescription(name, date, description, user);
+            return ResponseEntity.ok(newSet);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems occurred adding the set");
+        }
     }
 
     @GetMapping("/delete")
@@ -65,15 +77,7 @@ public class SetController {
 
     @GetMapping("/search")
     public List<Set> searchSets(@RequestParam String searchTerm) {
-        System.out.println("Received search term: " + searchTerm);
-        List<Set> sets = setService.searchSets(searchTerm);
-        System.out.println("Found sets: " + sets);
-        return sets;
-    }
-
-    @GetMapping("/search/test")
-    public String testSearchEndpoint() {
-        return "Search endpoint works!";
+        return setService.searchSets(searchTerm);
     }
 
     @GetMapping("/sort-date")

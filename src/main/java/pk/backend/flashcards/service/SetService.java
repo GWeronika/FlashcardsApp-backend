@@ -63,16 +63,18 @@ public class SetService {
         }
     }
 
-    public void addSetWithDescription(String name, LocalDate date, String description, AppUser user) {
+    public Optional<Set> addSetWithDescription(String name, LocalDate date, String description, AppUser user) {
         try {
-            if(name == null || date == null || user == null || description == null) {
+            if (name == null || name.trim().isEmpty() || description == null || description.trim().isEmpty() || date == null) {
                 throw new IllegalArgumentException("SetService: incorrect data");
             }
             Set set = new Set(name, date, description, user);
             setRepository.save(set);
+            return Optional.of(set);
         } catch (Exception e) {
             System.err.println("Error adding set: " + e.getMessage());
         }
+        return Optional.empty();
     }
 
     public void deleteSetById(int id) {
