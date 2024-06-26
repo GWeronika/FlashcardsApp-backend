@@ -1,19 +1,22 @@
 package pk.backend.flashcards.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import pk.backend.flashcards.entity.Flashcard;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.service.FlashcardService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/flashcard")
 public class FlashcardController {
+    @Autowired
     private final FlashcardService flashcardService;
 
     @Autowired
@@ -36,9 +39,23 @@ public class FlashcardController {
         return flashcardService.getFlashcardsBySetId(setId);
     }
 
-    @GetMapping("/add")
-    public void addFlashcard(String word, String description, boolean isFavourite, Set set) {
-        flashcardService.addFlashcard(word, description, isFavourite, set);
+    @PostMapping("/add")
+    public ResponseEntity<Map<String, String>> addFlashcard(@RequestParam String word, @RequestParam String description, @RequestBody Set set) {
+        try {
+            boolean isFavourite = false;
+            flashcardService.addFlashcard(word, description, isFavourite, set);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Flashcard added successfully");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "An error occurred while adding the flashcard");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     @GetMapping("/delete")
