@@ -60,8 +60,8 @@ public class SetController {
         }
     }
 
-    @GetMapping("/delete")
-    public void deleteSetById(int id) {
+    @DeleteMapping("/delete")
+    public void deleteSetById(@RequestParam int id) {
         setService.deleteSetById(id);
     }
 

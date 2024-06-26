@@ -58,13 +58,23 @@ public class FlashcardController {
         }
     }
 
-    @GetMapping("/delete")
-    public void deleteFlashcardById(int id) {
+    @DeleteMapping("/delete")
+    public void deleteFlashcardById(@RequestParam int id) {
         flashcardService.deleteFlashcardById(id);
     }
 
-    @GetMapping("/edit")
-    public void editFlashcard(int id, boolean isFavourite) {
-        flashcardService.editFlashcard(id, isFavourite);
+    @DeleteMapping("/delete/set")
+    public void deleteFlashcardBySetId(@RequestParam int setId) {
+        flashcardService.deleteFlashcardBySetId(setId);
+    }
+
+    @PutMapping("/edit/favourite")
+    public void editFlashcardFavourite(int id, boolean isFavourite) {
+        flashcardService.editFlashcardFavourite(id, isFavourite);
+    }
+
+    @PutMapping("/edit")
+    public void editFlashcardWord(@RequestParam int id, @RequestParam String word, @RequestParam String description) {
+        flashcardService.editFlashcard(id, word, description);
     }
 }

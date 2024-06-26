@@ -71,7 +71,38 @@ public class FlashcardService {
         }
     }
 
-    public void editFlashcard(int id, boolean isFavourite) {
+    public void deleteFlashcardBySetId(int setId) {
+        try {
+            if(setId <= 0) {
+                throw new IllegalArgumentException("FlashcardService: incorrect id");
+            }
+            flashcardRepository.deleteFlashcardsBySetId(setId);
+        } catch (Exception e) {
+            System.err.println("Error deleting flashcard: " + e.getMessage());
+        }
+    }
+
+    public void editFlashcard(int id, String word, String description) {
+        try {
+            if (id <= 0) {
+                throw new IllegalArgumentException("FlashcardService: incorrect id");
+            }
+            Optional<Flashcard> existingFlashcardOptional = flashcardRepository.findById(id);
+            if (existingFlashcardOptional.isPresent()) {
+                Flashcard existingFlashcard = existingFlashcardOptional.get();
+                existingFlashcard.setWord(word);
+                existingFlashcard.setDescription(description);
+                flashcardRepository.save(existingFlashcard);
+            } else {
+                throw new IllegalArgumentException("FlashcardService: flashcard not found with id " + id);
+            }
+        } catch (Exception e) {
+            System.err.println("Error editing flashcard: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void editFlashcardFavourite(int id, boolean isFavourite) {
         try {
             if (id <= 0) {
                 throw new IllegalArgumentException("FlashcardService: incorrect id");
