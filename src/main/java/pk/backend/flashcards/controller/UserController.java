@@ -47,14 +47,39 @@ public class UserController {
         userService.deleteUserById(id);
     }
 
-    @GetMapping("/edit/password")
-    public void editUserPassword(int id, String password) {
-        userService.editUserPassword(id, password);
+    @PutMapping("/edit/password")
+    public ResponseEntity<Void> editUserPassword(@RequestParam int id, @RequestParam String password) {
+        try {
+            userService.editUserPassword(id, password);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/edit/profile")
+    public ResponseEntity<Void> editUserProfile(@RequestParam int id, @RequestParam String name, @RequestParam String email) {
+        try {
+            userService.editUserProfile(id, name, email);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/login")
     public Optional<AppUser> loginUser(@RequestParam String username, @RequestParam String password) {
         return userService.authenticateUser(username, password);
+    }
+
+    @PostMapping("/verify-password")
+    public ResponseEntity<Boolean> verifyPassword(@RequestParam int id, @RequestParam String password) {
+        boolean isValid = userService.verifyPassword(id, password);
+        if (isValid) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
     }
 
 }

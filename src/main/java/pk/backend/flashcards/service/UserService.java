@@ -76,13 +76,40 @@ public class UserService {
             if (id <= 0) {
                 throw new IllegalArgumentException("UserService: incorrect id");
             }
-            if(!isPasswordValid(newPassword)) {
+            if (!isPasswordValid(newPassword)) {
                 throw new IllegalArgumentException("UserService: password not valid");
             }
             Optional<AppUser> existingUserOptional = userRepository.findById(id);
             if (existingUserOptional.isPresent()) {
                 AppUser existingUser = existingUserOptional.get();
-                existingUser.setPassword(newPassword);
+                String salt = SaltGenerator.generateSalt();
+                String hashedPassword = PasswordEncoder.hashPassword(newPassword, salt);
+                existingUser.setPassword(hashedPassword);
+                existingUser.setSalt(salt);
+
+                userRepository.save(existingUser);
+            } else {
+                throw new IllegalArgumentException("UserService: user not found with id " + id);
+            }
+        } catch (Exception e) {
+            System.err.println("Error editing user: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void editUserProfile(int id, String newUsername, String newEmail) {
+        try {
+            if (id <= 0) {
+                throw new IllegalArgumentException("UserService: incorrect id");
+            }
+            if(!isEmailValid(newEmail)) {
+                throw new IllegalArgumentException("UserService: email not valid");
+            }
+            Optional<AppUser> existingUserOptional = userRepository.findById(id);
+            if (existingUserOptional.isPresent()) {
+                AppUser existingUser = existingUserOptional.get();
+                existingUser.setName(newUsername);
+                existingUser.setEmail(newEmail);
 
                 userRepository.save(existingUser);
             } else {
@@ -105,6 +132,17 @@ public class UserService {
             }
         }
         return Optional.empty();
+    }
+
+    public boolean verifyPassword(int id, String password) {
+        Optional<AppUser> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            AppUser user = userOptional.get();
+            String salt = user.getSalt();
+            String hashedPassword = PasswordEncoder.hashPassword(password, salt);
+            return hashedPassword != null && hashedPassword.equals(user.getPassword());
+        }
+        return false;
     }
 
     private boolean isPasswordValid(String password) {
