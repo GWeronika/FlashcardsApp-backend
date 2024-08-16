@@ -68,8 +68,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Optional<AppUser> loginUser(@RequestParam String username, @RequestParam String password) {
-        return userService.authenticateUser(username, password);
+    public ResponseEntity<AppUser> loginUser(@RequestParam String username, @RequestParam String password) {
+        Optional<AppUser> userOptional = userService.authenticateUser(username, password);
+        return userOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
     @PostMapping("/verify-password")
