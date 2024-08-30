@@ -30,6 +30,18 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    @GetMapping("/select/email")
+    public ResponseEntity<AppUser> getUserByEmail(@RequestParam String email) {
+        try {
+            Optional<AppUser> userOptional = userService.getUserByEmail(email);
+            return userOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addUser(@RequestParam String name, @RequestParam String email, @RequestParam String password) {
         try {

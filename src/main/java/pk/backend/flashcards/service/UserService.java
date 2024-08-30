@@ -39,6 +39,18 @@ public class UserService {
         }
     }
 
+    public Optional<AppUser> getUserByEmail(String email) {
+        try {
+            if(email.isEmpty()) {
+                throw new IllegalArgumentException("UserRepository: incorrect email");
+            }
+            return userRepository.findAppUserByEmail(email);
+        } catch (Exception e) {
+            System.err.println("Error retrieving user");
+            throw e;
+        }
+    }
+
     public void addUser(String name, String email, String password) {
         try {
             if(name == null || password == null) {
