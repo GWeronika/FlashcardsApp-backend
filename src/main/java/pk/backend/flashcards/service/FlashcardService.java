@@ -7,6 +7,14 @@ import pk.backend.flashcards.entity.Flashcard;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.repository.FlashcardRepository;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -119,6 +127,19 @@ public class FlashcardService {
         } catch (Exception e) {
             System.err.println("Error editing flashcard: " + e.getMessage());
             throw e;
+        }
+    }
+
+    public void importFlashcardsFromExcel(MultipartFile file, Set set) {
+        try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                String englishWord = row.getCell(0).getStringCellValue();
+                String polishWord = row.getCell(1).getStringCellValue();
+                addFlashcard(englishWord, polishWord, false, set);
+            }
+        } catch (Exception e) {
+            System.err.println("Error importing flashcards: " + e.getMessage());
         }
     }
 }

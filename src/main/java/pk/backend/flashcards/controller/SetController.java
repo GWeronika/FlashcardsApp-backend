@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.entity.AppUser;
+import pk.backend.flashcards.service.FlashcardService;
 import pk.backend.flashcards.service.SetService;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,10 +21,12 @@ import java.util.Optional;
 @RequestMapping("/api/set")
 public class SetController {
     private final SetService setService;
+    private final FlashcardService flashcardService;
 
     @Autowired
-    public SetController(SetService setService) {
+    public SetController(SetService setService, FlashcardService flashcardService) {
         this.setService = setService;
+        this.flashcardService = flashcardService;
     }
 
     @GetMapping("/select/all")
@@ -84,4 +89,21 @@ public class SetController {
     public List<Set> sortSetsByDate(boolean ascending) {
         return setService.sortSetsByDate(ascending);
     }
+
+
+    @PostMapping("/import")
+    public ResponseEntity<String> importSet(@RequestParam("file") MultipartFile file, @RequestParam int setId) {
+        try {
+            Optional<Set> optionalSet = setService.getSetById(setId);
+            if (optionalSet.isPresent()) {
+                flashcardService.importFlashcardsFromExcel(file, optionalSet.get());
+                return ResponseEntity.ok("Flashcards imported successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Set not found");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error importing flashcards: " + e.getMessage());
+        }
+    }
+
 }
