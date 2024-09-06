@@ -22,9 +22,13 @@ public class Set {
     @Column
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "author_id", referencedColumnName = "userID")
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "userID", nullable = false)
     private AppUser user;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "categoryID")
+    private Category category;
 
     public Set() {}
 
@@ -39,6 +43,14 @@ public class Set {
         this.date = date;
         this.user = user;
         this.description = description;
+    }
+
+    public Set(String name, LocalDate date, String description, AppUser user, Category category) {
+        this.name = name;
+        this.date = date;
+        this.user = user;
+        this.description = description;
+        this.category = category;
     }
 
     @Override

@@ -3,8 +3,10 @@ package pk.backend.flashcards.service;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pk.backend.flashcards.entity.Category;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.entity.AppUser;
+import pk.backend.flashcards.repository.CategoryRepository;
 import pk.backend.flashcards.repository.SetRepository;
 
 import java.time.LocalDate;
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class SetService {
     private final SetRepository setRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public SetService(SetRepository setRepository) {
+    public SetService(SetRepository setRepository, CategoryRepository categoryRepository) {
         this.setRepository = setRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<Set> getAllSets() {
@@ -51,6 +55,18 @@ public class SetService {
         }
     }
 
+    public List<Set> getSetsByCategoryId(int categoryId) {
+        try {
+            if(categoryId <= 0) {
+                throw new IllegalArgumentException("SetService: incorrect categoryId");
+            }
+            return setRepository.getSetsByCategoryId(categoryId);
+        } catch (Exception e) {
+            System.err.println("Error retrieving sets by categoryId: " + e.getMessage());
+            throw e;
+        }
+    }
+
     public void addSet(String name, LocalDate date, AppUser user) {
         try {
             if(name == null || date == null || user == null) {
@@ -76,6 +92,21 @@ public class SetService {
         }
         return Optional.empty();
     }
+
+    public Optional<Set> addSetWithCategory(String name, LocalDate date, String description, AppUser user, Category category) {
+        try {
+            if (name == null || name.trim().isEmpty() || date == null || user == null || category == null) {
+                throw new IllegalArgumentException("SetService: incorrect data");
+            }
+            Set set = new Set(name, date, description, user, category);
+            setRepository.save(set);
+            return Optional.of(set);
+        } catch (Exception e) {
+            System.err.println("Error adding set with category: " + e.getMessage());
+        }
+        return Optional.empty();
+    }
+
 
     public void deleteSetById(int id) {
         try {
@@ -124,6 +155,28 @@ public class SetService {
             }
         } catch (Exception e) {
             System.err.println("Error editing set: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void editSetCategory(int setId, int categoryId) {
+        try {
+            if (setId <= 0 || categoryId <= 0) {
+                throw new IllegalArgumentException("SetService: incorrect setId or categoryId");
+            }
+            Optional<Set> existingSetOptional = setRepository.findById(setId);
+            Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
+
+            if (existingSetOptional.isPresent() && categoryOptional.isPresent()) {
+                Set existingSet = existingSetOptional.get();
+                Category category = categoryOptional.get();
+                existingSet.setCategory(category);
+                setRepository.save(existingSet);
+            } else {
+                throw new IllegalArgumentException("SetService: set or category not found with given ids");
+            }
+        } catch (Exception e) {
+            System.err.println("Error editing set category: " + e.getMessage());
             throw e;
         }
     }

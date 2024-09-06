@@ -6,8 +6,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pk.backend.flashcards.entity.Category;
 import pk.backend.flashcards.entity.Set;
 import pk.backend.flashcards.entity.AppUser;
+import pk.backend.flashcards.service.CategoryService;
 import pk.backend.flashcards.service.FlashcardService;
 import pk.backend.flashcards.service.SetService;
 
@@ -22,11 +24,13 @@ import java.util.Optional;
 public class SetController {
     private final SetService setService;
     private final FlashcardService flashcardService;
+    private final CategoryService categoryService;
 
     @Autowired
-    public SetController(SetService setService, FlashcardService flashcardService) {
+    public SetController(SetService setService, FlashcardService flashcardService, CategoryService categoryService) {
         this.setService = setService;
         this.flashcardService = flashcardService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/select/all")
@@ -42,6 +46,11 @@ public class SetController {
     @GetMapping("/select/userid")
     public Optional<List<Set>> getSetByUserId(@RequestParam int userID) {
         return setService.getSetByUserId(userID);
+    }
+
+    @GetMapping("/select/category")
+    public List<Set> getSetsByCategoryId(@RequestParam int categoryId) {
+        return setService.getSetsByCategoryId(categoryId);
     }
 
     @GetMapping("/add")
@@ -65,6 +74,27 @@ public class SetController {
         }
     }
 
+    @PostMapping("/add/category")
+    public ResponseEntity<?> addSetWithCategory(@RequestParam String name, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                @RequestParam String description, @RequestParam String userJson, @RequestParam int categoryId) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            AppUser user = objectMapper.readValue(userJson, AppUser.class);
+            Optional<Category> category = categoryService.getCategoryById(categoryId);
+
+            if (category.isPresent()) {
+                Optional<Set> newSet = setService.addSetWithCategory(name, date, description, user, category.get());
+                return ResponseEntity.ok(newSet);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category not found");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Problems occurred adding the set with category");
+        }
+    }
+
     @DeleteMapping("/delete")
     public void deleteSetById(@RequestParam int id) {
         setService.deleteSetById(id);
@@ -78,6 +108,18 @@ public class SetController {
     @GetMapping("/edit/description")
     public void editSetDescription(int id, String description) {
         setService.editSetDescription(id, description);
+    }
+
+    @PostMapping("/edit/category")
+    public ResponseEntity<String> editSetCategory(@RequestParam int setId, @RequestParam int categoryId) {
+        try {
+            setService.editSetCategory(setId, categoryId);
+            return ResponseEntity.ok("Set category updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the set category");
+        }
     }
 
     @GetMapping("/search")
@@ -105,5 +147,4 @@ public class SetController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error importing flashcards: " + e.getMessage());
         }
     }
-
 }
