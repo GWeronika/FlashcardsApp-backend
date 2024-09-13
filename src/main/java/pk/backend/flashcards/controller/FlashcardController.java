@@ -16,6 +16,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/flashcard")
 public class FlashcardController {
+
     @Autowired
     private final FlashcardService flashcardService;
 
@@ -30,17 +31,26 @@ public class FlashcardController {
     }
 
     @GetMapping("/select/id")
-    public Optional<Flashcard> getFlashcardById(int id) {
-        return flashcardService.getFlashcardById(id);
+    public ResponseEntity<Optional<Flashcard>> getFlashcardById(@RequestParam int id) {
+        Optional<Flashcard> flashcard = flashcardService.getFlashcardById(id);
+        return flashcard.isPresent()
+                ? ResponseEntity.ok(flashcard)
+                : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/select/setid")
-    public Optional<List<Flashcard>> getFlashcardsBySetId(int setId) {
-        return flashcardService.getFlashcardsBySetId(setId);
+    public ResponseEntity<List<Flashcard>> getFlashcardsBySetId(@RequestParam int setId) {
+        List<Flashcard> flashcards = flashcardService.getFlashcardsBySetId(setId);
+        return flashcards.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(flashcards);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, String>> addFlashcard(@RequestParam String word, @RequestParam String description, @RequestBody Set set) {
+    public ResponseEntity<Map<String, String>> addFlashcard(
+            @RequestParam String word,
+            @RequestParam String description,
+            @RequestBody Set set) {
         try {
             boolean isFavourite = false;
             flashcardService.addFlashcard(word, description, isFavourite, set);
@@ -69,7 +79,7 @@ public class FlashcardController {
     }
 
     @PutMapping("/edit/favourite")
-    public void editFlashcardFavourite(int id, boolean isFavourite) {
+    public void editFlashcardFavourite(@RequestParam int id, @RequestParam boolean isFavourite) {
         flashcardService.editFlashcardFavourite(id, isFavourite);
     }
 

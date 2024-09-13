@@ -44,7 +44,7 @@ public class FlashcardService {
         }
     }
 
-    public Optional<List<Flashcard>> getFlashcardsBySetId(int setId) {
+    public List<Flashcard> getFlashcardsBySetId(int setId) {
         try {
             if(setId <= 0) {
                 throw new IllegalArgumentException("FlashcardService: incorrect setId");
