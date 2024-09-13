@@ -1,13 +1,17 @@
-FROM maven:3.8.6-openjdk-21 as build
+FROM openjdk:21-jdk-slim
+
+RUN apt-get update && \
+    apt-get install -y maven && \
+    apt-get clean;
 
 WORKDIR /app
 
 COPY pom.xml .
+
+RUN mvn dependency:go-offline
+
 COPY src ./src
 
-RUN mvn clean package
+RUN mvn package
 
-FROM openjdk:21-jdk-slim
-WORKDIR /app
-COPY --from=build /app/target/flashcards-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "target/flashcards-0.0.1-SNAPSHOT.jar"]
