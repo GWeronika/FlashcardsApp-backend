@@ -27,7 +27,7 @@ public class Set {
     private AppUser user;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "categoryID")
+    @JoinColumn(name = "category_id", referencedColumnName = "categoryID", nullable = false)
     private Category category;
 
     public Set() {}
